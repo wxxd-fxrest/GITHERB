@@ -22,7 +22,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 struct GITHERBApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            AuthContentView()
         }
     }
 }
