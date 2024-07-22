@@ -13,7 +13,7 @@ struct AuthContentView: View {
             Image(systemName: "globe")
                 .imageScale(.large)
                 .foregroundStyle(.tint)
-            Text("Hello!")
+            Text("Auth)
         }
         .padding()
     }
