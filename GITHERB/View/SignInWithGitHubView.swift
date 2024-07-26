@@ -6,10 +6,10 @@
 //
 
 import SwiftUI
-import AuthenticationServices
 import Firebase
 import FirebaseAuth
 import FirebaseFirestore
+import AuthenticationServices
 
 struct SignInWithGitHubView: UIViewControllerRepresentable {
     private var clientID: String
