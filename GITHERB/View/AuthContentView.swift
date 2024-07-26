@@ -6,57 +6,36 @@
 //
 
 import SwiftUI
-import Firebase
 
 struct AuthContentView: View {
     @State private var isSignedIn = false
-    @State private var showGitHubSignIn = false
+    @State private var isPresented = false
+    @State private var isLoading: Bool = false
 
     var body: some View {
         VStack {
             if isSignedIn {
-                Text("Welcome! You are signed in.")
+                Text("Signed In!")
             } else {
-                VStack {
-                    Button(action: {
-                        // Google logic
-                    }) {
-                        Text("Sign in with Google")
-                            .padding()
-                            .background(Color.blue)
-                            .foregroundColor(.white)
-                            .cornerRadius(8)
-                    }
-
-                    Button(action: {
-                        showGitHubSignIn = true
-                    }) {
-                        Text("Sign in with GitHub")
-                            .padding()
-                            .background(Color.black)
-                            .foregroundColor(.white)
-                            .cornerRadius(8)
-                    }
-                    
-                    Button(action: {
-                        // Apple logic
-                    }) {
-                        Text("Sign in with Apple")
-                            .padding()
-                            .background(Color.green)
-                            .foregroundColor(.white)
-                            .cornerRadius(8)
-                    }
+                Button(action: {
+                    isPresented = true
+                }) {
+                    Text("Sign In with GitHub")
                 }
-                .padding(.top, 300)
-                .onAppear {
-                    // Firebase 초기화
-                    FirebaseApp.configure()
+                .fullScreenCover(isPresented: $isPresented) {
+                    SignInWithGitHubView(isSignedIn: $isSignedIn, isPresented: $isPresented, isLoading: $isLoading)
+                        .overlay(
+                            Group {
+                                if isLoading {
+                                    ProgressView()
+                                        .progressViewStyle(CircularProgressViewStyle())
+                                        .background(Color.red.opacity(0.8))
+                                        .edgesIgnoringSafeArea(.all)
+                                }
+                            }
+                        )
                 }
             }
-        }
-        .sheet(isPresented: $showGitHubSignIn) {
-            SignInWithGitHubView(isSignedIn: $isSignedIn, isPresented: $showGitHubSignIn)
         }
     }
 }

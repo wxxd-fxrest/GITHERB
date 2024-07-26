@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0B3534F82C5394AA00F4B57C /* LoginKey.plist in Resources */ = {isa = PBXBuildFile; fileRef = 0B3534F72C5394AA00F4B57C /* LoginKey.plist */; };
 		0B6E44252C4F994600264D0D /* SignInWithGitHubView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B6E44242C4F994600264D0D /* SignInWithGitHubView.swift */; };
 		0B6E44272C4F99D000264D0D /* AuthViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B6E44262C4F99D000264D0D /* AuthViewModel.swift */; };
 		0B6E442A2C4F99E300264D0D /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B6E44292C4F99E300264D0D /* User.swift */; };
@@ -26,9 +27,11 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0B3534F72C5394AA00F4B57C /* LoginKey.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = LoginKey.plist; sourceTree = "<group>"; };
 		0B6E44242C4F994600264D0D /* SignInWithGitHubView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInWithGitHubView.swift; sourceTree = "<group>"; };
 		0B6E44262C4F99D000264D0D /* AuthViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthViewModel.swift; sourceTree = "<group>"; };
 		0B6E44292C4F99E300264D0D /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
+		0B817AF12C52153A009DD1C0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		0BC977C12C4E1DF600BE0EC1 /* GITHERB.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GITHERB.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0BC977C42C4E1DF600BE0EC1 /* GITHERBApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GITHERBApp.swift; sourceTree = "<group>"; };
 		0BC977C62C4E1DF600BE0EC1 /* AuthContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthContentView.swift; sourceTree = "<group>"; };
@@ -89,6 +92,8 @@
 				0BD423F12C4E2505005E4D63 /* ViewModel */,
 				0BC977C42C4E1DF600BE0EC1 /* GITHERBApp.swift */,
 				0BD423FB2C4E27C7005E4D63 /* Launch Screen.storyboard */,
+				0B817AF12C52153A009DD1C0 /* Info.plist */,
+				0B3534F72C5394AA00F4B57C /* LoginKey.plist */,
 				0BD423FD2C4E3A46005E4D63 /* GoogleService-Info.plist */,
 				0BC977C82C4E1DF800BE0EC1 /* Assets.xcassets */,
 				0BC977CA2C4E1DF800BE0EC1 /* Preview Content */,
@@ -198,6 +203,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0B3534F82C5394AA00F4B57C /* LoginKey.plist in Resources */,
 				0BC977CC2C4E1DF800BE0EC1 /* Preview Assets.xcassets in Resources */,
 				0BD423FE2C4E3A46005E4D63 /* GoogleService-Info.plist in Resources */,
 				0BC977C92C4E1DF800BE0EC1 /* Assets.xcassets in Resources */,
@@ -357,6 +363,7 @@
 				DEVELOPMENT_TEAM = KWVJ99C465;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = GITHERB/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -387,6 +394,7 @@
 				DEVELOPMENT_TEAM = KWVJ99C465;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = GITHERB/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

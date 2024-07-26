@@ -69,6 +69,8 @@ Carthage/Build
 # Firebase configuration file
 GoogleService-Info.plist
 
+Info.plist
+LoginKey.plist
 APIkey.plist
 
 fastlane/report.xml
