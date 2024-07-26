@@ -92,10 +92,10 @@
 				0BD423F12C4E2505005E4D63 /* ViewModel */,
 				0BC977C42C4E1DF600BE0EC1 /* GITHERBApp.swift */,
 				0BD423FB2C4E27C7005E4D63 /* Launch Screen.storyboard */,
+				0BC977C82C4E1DF800BE0EC1 /* Assets.xcassets */,
 				0B817AF12C52153A009DD1C0 /* Info.plist */,
 				0B3534F72C5394AA00F4B57C /* LoginKey.plist */,
 				0BD423FD2C4E3A46005E4D63 /* GoogleService-Info.plist */,
-				0BC977C82C4E1DF800BE0EC1 /* Assets.xcassets */,
 				0BC977CA2C4E1DF800BE0EC1 /* Preview Content */,
 			);
 			path = GITHERB;

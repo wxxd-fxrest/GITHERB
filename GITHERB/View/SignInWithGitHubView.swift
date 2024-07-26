@@ -14,6 +14,7 @@ import FirebaseFirestore
 struct SignInWithGitHubView: UIViewControllerRepresentable {
     private var clientID: String
     private var clientPW: String
+    private var urlScheme: String
     
     @Binding var isSignedIn: Bool
     @Binding var isPresented: Bool
@@ -27,11 +28,13 @@ struct SignInWithGitHubView: UIViewControllerRepresentable {
         if let path = Bundle.main.path(forResource: "LoginKey", ofType: "plist"),
            let dictionary = NSDictionary(contentsOfFile: path) as? [String: AnyObject],
            let clientID = dictionary["GihubClientID"] as? String,
-           let clientPW = dictionary["GihubClientPW"] as? String {
+           let clientPW = dictionary["GihubClientPW"] as? String,
+           let urlScheme = dictionary["GithubURLScheme"] as? String {
             self.clientID = clientID
             self.clientPW = clientPW
+            self.urlScheme = urlScheme
         } else {
-            fatalError("LoginKey.plist에서 ClientID, ClientPW 찾을 수 없음")
+            fatalError("LoginKey.plist에서 ClientID, ClientPW, urlScheme 찾을 수 없음")
         }
     }
 
@@ -52,7 +55,7 @@ struct SignInWithGitHubView: UIViewControllerRepresentable {
 
         let authSession = ASWebAuthenticationSession(
             url: URL(string: "https://github.com/login/oauth/authorize?client_id=\(self.clientID)&scope=user:email")!,
-            callbackURLScheme: "myapp") { callbackURL, error in
+            callbackURLScheme: urlScheme) { callbackURL, error in
                 if let error = error {
                     print("Error during authentication: \(error.localizedDescription)")
                     DispatchQueue.main.async {
@@ -99,7 +102,7 @@ struct SignInWithGitHubView: UIViewControllerRepresentable {
             "client_id": self.clientID,
             "client_secret": self.clientPW,
             "code": code,
-            "redirect_uri": "myapp://"
+            "redirect_uri": "\(urlScheme)://"
         ]
         let bodyString = body.map { "\($0.key)=\($0.value)" }.joined(separator: "&")
         request.httpBody = bodyString.data(using: .utf8)
@@ -222,7 +225,8 @@ struct SignInWithGitHubView: UIViewControllerRepresentable {
             "uid": user.uid,
             "email": email ?? (userData["email"] as? String ?? ""),
             "displayName": login,
-            "photoURL": userData["avatar_url"] as? String ?? ""
+            "photoURL": userData["avatar_url"] as? String ?? "",
+            "LoginType": "GITHUB"
         ]) { error in
             if let error = error {
                 print("Error save: \(error.localizedDescription)")
