@@ -11,17 +11,19 @@ import Firebase
 import FirebaseAuth
 import FirebaseFirestore
 
-struct SignInWithGitHubView: UIViewControllerRepresentable {
+struct SignInWithGitHubViewModel: UIViewControllerRepresentable {
+    @Binding var isSignedIn: Bool
+    @Binding var isGitHubLoggedIn: Bool
+    @Binding var isPresented: Bool
+    @Binding var isLoading: Bool
+    
     private var clientID: String
     private var clientPW: String
     private var urlScheme: String
-    
-    @Binding var isSignedIn: Bool
-    @Binding var isPresented: Bool
-    @Binding var isLoading: Bool
 
-    init(isSignedIn: Binding<Bool>, isPresented: Binding<Bool>, isLoading: Binding<Bool>) {
+    init(isSignedIn: Binding<Bool>, isGitHubLoggedIn: Binding<Bool>, isPresented: Binding<Bool>, isLoading: Binding<Bool>) {
         self._isSignedIn = isSignedIn
+        self._isGitHubLoggedIn = isGitHubLoggedIn
         self._isPresented = isPresented
         self._isLoading = isLoading
         
@@ -39,9 +41,9 @@ struct SignInWithGitHubView: UIViewControllerRepresentable {
     }
 
     class Coordinator: NSObject, ASWebAuthenticationPresentationContextProviding {
-        var parent: SignInWithGitHubView
+        var parent: SignInWithGitHubViewModel
 
-        init(parent: SignInWithGitHubView) {
+        init(parent: SignInWithGitHubViewModel) {
             self.parent = parent
         }
 
@@ -210,7 +212,10 @@ struct SignInWithGitHubView: UIViewControllerRepresentable {
             DispatchQueue.main.async {
                 self.isSignedIn = true
                 self.isLoading = false
+                self.isGitHubLoggedIn = true
                 self.isPresented = false
+                UserDefaultsManager.shared.isSignedIn = true
+                UserDefaultsManager.shared.isGitHubLoggedIn = true
             }
         }
     }
