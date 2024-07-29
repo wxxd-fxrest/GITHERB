@@ -63,7 +63,7 @@ class SignInWithGoogleViewModel: ObservableObject {
                 UserDefaultsManager.shared.isSignedIn = true
                 
                 // Firestore에 사용자 정보 저장
-                self.storeUserData()
+                self.handleUserData()
             }
         }
     }
@@ -75,7 +75,7 @@ class SignInWithGoogleViewModel: ObservableObject {
         return nil
     }
 
-    private func storeUserData() {
+    private func handleUserData() {
         guard let user = Auth.auth().currentUser else {
             print("오류: 현재 사용자를 찾을 수 없음")
             return
@@ -83,21 +83,36 @@ class SignInWithGoogleViewModel: ObservableObject {
         
         let userRef = firestore.collection("users").document(user.uid)
         
-        let userData: [String: Any] = [
-            "uid": user.uid,
-            "email": user.email ?? "",
-            "displayName": user.displayName ?? "",
-            "photoURL": user.photoURL?.absoluteString ?? "",
-            "login-type": "GOOGLE",
-            "github-connection": false,
-            "github-email": "",
-        ]
-        
-        userRef.setData(userData) { error in
+        userRef.getDocument { [weak self] (document, error) in
+            guard let self = self else { return }
+            
             if let error = error {
-                print("사용자 데이터를 저장하는 중에 오류 발생: \(error.localizedDescription)")
+                print("Firestore에서 사용자 정보를 가져오는 중에 오류 발생: \(error.localizedDescription)")
+                return
+            }
+            
+            if let document = document, document.exists {
+                // User already exists, no need to save again
+                print("User already exists in Firestore.")
             } else {
-                print("사용자 데이터 성공적으로 저장")
+                // User does not exist, save the data
+                let userData: [String: Any] = [
+                    "uid": user.uid,
+                    "email": user.email ?? "",
+                    "displayName": user.displayName ?? "",
+                    "photoURL": user.photoURL?.absoluteString ?? "",
+                    "login-type": "GOOGLE",
+                    "github-connection": false,
+                    "github-email": "",
+                ]
+                
+                userRef.setData(userData) { error in
+                    if let error = error {
+                        print("사용자 데이터를 저장하는 중에 오류 발생: \(error.localizedDescription)")
+                    } else {
+                        print("사용자 데이터 성공적으로 저장")
+                    }
+                }
             }
         }
     }
@@ -129,7 +144,7 @@ class SignInWithGoogleViewModel: ObservableObject {
                     self.isSignedIn = true
                     UserDefaultsManager.shared.isSignedIn = true
                     
-                    self.storeUserData()
+                    self.handleUserData()
                 }
             }
         } else {

@@ -4,7 +4,6 @@
 //
 //  Created by 밀가루 on 7/27/24.
 //
-
 import SwiftUI
 import Foundation
 import Firebase
@@ -102,6 +101,35 @@ class SignInWithAppleViewModel: NSObject, ObservableObject {
             }
         }
     }
+
+    private func saveUserInfoToFirestore(user: User, appleIDCredential: ASAuthorizationAppleIDCredential) {
+        let db = Firestore.firestore()
+        let userRef = db.collection("users").document(user.uid)
+        
+        // Check if the user already exists
+        userRef.getDocument { (document, error) in
+            if let document = document, document.exists {
+                // User already exists, no need to save again
+                print("User already exists in Firestore.")
+            } else {
+                // User does not exist, save the data
+                userRef.setData([
+                    "uid": user.uid,
+                    "displayName": user.displayName ?? "",
+                    "photoURL": user.photoURL?.absoluteString ?? "",
+                    "login-type": "APPLE",
+                    "github-connection": false,
+                    "github-email": "",
+                ]) { error in
+                    if let error = error {
+                        print("Firestore에 사용자 정보를 저장하는 중 오류 발생: \(error.localizedDescription)")
+                    } else {
+                        print("Firestore에 사용자 정보를 성공적으로 저장했습니다.")
+                    }
+                }
+            }
+        }
+    }
 }
 
 extension SignInWithAppleViewModel: ASAuthorizationControllerDelegate {
@@ -125,6 +153,14 @@ extension SignInWithAppleViewModel: ASAuthorizationControllerDelegate {
                     print("Apple 로그인하는 중에 오류 발생: \(error.localizedDescription)")
                     return
                 }
+                
+                guard let user = authResult?.user else {
+                    print("사용자 정보가 없음")
+                    return
+                }
+                
+                // Save user information to Firestore
+                self.saveUserInfoToFirestore(user: user, appleIDCredential: appleIDCredential)
                 
                 // Update Apple sign-in state
                 UserDefaultsManager.shared.appleUserId = appleIDCredential.user
