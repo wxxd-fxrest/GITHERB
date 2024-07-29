@@ -34,7 +34,7 @@ struct SignInWithGitHubViewModel: UIViewControllerRepresentable {
             self.clientPW = clientPW
             self.urlScheme = urlScheme
         } else {
-            fatalError("LoginKey.plist에서 ClientID, ClientPW, urlScheme 찾을 수 없음")
+            fatalError("LoginKey.plist - ClientID, ClientPW, urlScheme 찾을 수 없음")
         }
     }
 
