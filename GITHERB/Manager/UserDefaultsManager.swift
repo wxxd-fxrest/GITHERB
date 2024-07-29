@@ -7,44 +7,119 @@
 
 import Foundation
 
-class UserDefaultsManager {
+final class KeychainManager {
+    static let shared = KeychainManager()
     
-    private enum Keys: String {
-        case isSignedIn
-        case isGitHubLoggedIn
+    func save(key: String, value: String) {
+        let data = Data(value.utf8)
+        let query = [
+            kSecClass: kSecClassGenericPassword,
+            kSecAttrAccount: key,
+            kSecValueData: data
+        ] as [String: Any]
+        
+        SecItemAdd(query as CFDictionary, nil)
     }
     
+    func load(key: String) -> String? {
+        let query = [
+            kSecClass: kSecClassGenericPassword,
+            kSecAttrAccount: key,
+            kSecReturnData: true,
+            kSecMatchLimit: kSecMatchLimitOne
+        ] as [String: Any]
+        
+        var dataTypeRef: AnyObject?
+        let status: OSStatus = SecItemCopyMatching(query as CFDictionary, &dataTypeRef)
+        
+        if status == noErr {
+            if let data = dataTypeRef as? Data {
+                return String(data: data, encoding: .utf8)
+            }
+        }
+        return nil
+    }
+    
+    func delete(key: String) {
+        let query = [
+            kSecClass: kSecClassGenericPassword,
+            kSecAttrAccount: key
+        ] as [String: Any]
+        
+        SecItemDelete(query as CFDictionary)
+    }
+}
+
+final class UserDefaultsManager {
     static let shared = UserDefaultsManager()
     
-    private init() {}
+    private let userDefaults = UserDefaults.standard
     
-    // 일반 로그인 상태
+    private enum Keys {
+        static let isSignedIn = "isSignedIn"
+        static let isGitHubLoggedIn = "isGitHubLoggedIn"
+        static let appleUserId = "appleUserId"
+        static let githubAccessToken = "githubAccessToken"
+    }
+    
     var isSignedIn: Bool {
         get {
-            UserDefaults.standard.bool(forKey: Keys.isSignedIn.rawValue)
+            let value = userDefaults.bool(forKey: Keys.isSignedIn)
+            print("isSignedIn: \(value)")
+            return value
         }
         set {
-            UserDefaults.standard.set(newValue, forKey: Keys.isSignedIn.rawValue)
+            userDefaults.set(newValue, forKey: Keys.isSignedIn)
+            print("isSignedIn: \(newValue)")
         }
     }
     
-    // GitHub 로그인 상태
     var isGitHubLoggedIn: Bool {
         get {
-            UserDefaults.standard.bool(forKey: Keys.isGitHubLoggedIn.rawValue)
+            let value = userDefaults.bool(forKey: Keys.isGitHubLoggedIn)
+            print("isGitHubLoggedIn: \(value)")
+            return value
         }
         set {
-            UserDefaults.standard.set(newValue, forKey: Keys.isGitHubLoggedIn.rawValue)
+            userDefaults.set(newValue, forKey: Keys.isGitHubLoggedIn)
+            print("isGitHubLoggedIn: \(newValue)")
         }
     }
     
-    // Clear UserDefaults - 로그아웃
-    func clearAll() {
-        UserDefaults.standard.removeObject(forKey: Keys.isSignedIn.rawValue)
-        UserDefaults.standard.removeObject(forKey: Keys.isGitHubLoggedIn.rawValue)
+    var appleUserId: String? {
+        get {
+            let value = userDefaults.string(forKey: Keys.appleUserId)
+            print("appleUserId: \(String(describing: value))")
+            return value
+        }
+        set {
+            userDefaults.set(newValue, forKey: Keys.appleUserId)
+            print("appleUserId: \(String(describing: newValue))")
+        }
     }
     
-    private func clear(_ key: Keys) {
-        UserDefaults.standard.removeObject(forKey: key.rawValue)
+    func clearAll() {
+        userDefaults.removeObject(forKey: Keys.isSignedIn)
+        userDefaults.removeObject(forKey: Keys.isGitHubLoggedIn)
+        userDefaults.removeObject(forKey: Keys.appleUserId)
+        KeychainManager.shared.delete(key: Keys.githubAccessToken)
+        print("모든 사용자 기본값 삭제")
+    }
+    
+    var githubAccessToken: String? {
+        get {
+            let value = KeychainManager.shared.load(key: Keys.githubAccessToken)
+            print("githubAccessToken: \(String(describing: value))")
+            return value
+        }
+        set {
+            if let token = newValue {
+                KeychainManager.shared.save(key: Keys.githubAccessToken, value: token)
+                print("githubAccessToken 값: \(token)")
+            } else {
+                KeychainManager.shared.delete(key: Keys.githubAccessToken)
+                print("githubAccessToken 삭제")
+            }
+        }
     }
 }

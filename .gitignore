@@ -73,6 +73,8 @@ Info.plist
 LoginKey.plist
 APIkey.plist
 
+GITHERB.entitlements
+
 fastlane/report.xml
 fastlane/Preview.html
 fastlane/screenshots/**/*.png

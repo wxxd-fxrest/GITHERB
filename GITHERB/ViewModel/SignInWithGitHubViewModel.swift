@@ -12,7 +12,6 @@ import FirebaseAuth
 import FirebaseFirestore
 
 struct SignInWithGitHubViewModel: UIViewControllerRepresentable {
-    @Binding var isSignedIn: Bool
     @Binding var isGitHubLoggedIn: Bool
     @Binding var isPresented: Bool
     @Binding var isLoading: Bool
@@ -21,8 +20,7 @@ struct SignInWithGitHubViewModel: UIViewControllerRepresentable {
     private var clientPW: String
     private var urlScheme: String
 
-    init(isSignedIn: Binding<Bool>, isGitHubLoggedIn: Binding<Bool>, isPresented: Binding<Bool>, isLoading: Binding<Bool>) {
-        self._isSignedIn = isSignedIn
+    init(isGitHubLoggedIn: Binding<Bool>, isPresented: Binding<Bool>, isLoading: Binding<Bool>) {
         self._isGitHubLoggedIn = isGitHubLoggedIn
         self._isPresented = isPresented
         self._isLoading = isLoading
@@ -59,7 +57,7 @@ struct SignInWithGitHubViewModel: UIViewControllerRepresentable {
             url: URL(string: "https://github.com/login/oauth/authorize?client_id=\(self.clientID)&scope=user:email")!,
             callbackURLScheme: urlScheme) { callbackURL, error in
                 if let error = error {
-                    print("Error during authentication: \(error.localizedDescription)")
+                    print("인증 중 오류 발생: \(error.localizedDescription)")
                     DispatchQueue.main.async {
                         self.isPresented = false
                     }
@@ -111,7 +109,7 @@ struct SignInWithGitHubViewModel: UIViewControllerRepresentable {
 
         URLSession.shared.dataTask(with: request) { data, response, error in
             guard let data = data, error == nil else {
-                print("Error fetching token: \(String(describing: error))")
+                print("토큰을 가져오는 중 오류 발생: \(String(describing: error))")
                 DispatchQueue.main.async {
                     self.isPresented = false
                 }
@@ -188,7 +186,7 @@ struct SignInWithGitHubViewModel: UIViewControllerRepresentable {
             completion(primaryEmail)
         }.resume()
     }
-
+ 
     func signInToFirebaseWithGitHubUserData(userData: [String: Any], email: String?, accessToken: String) {
         DispatchQueue.main.async {
             self.isLoading = true
@@ -207,15 +205,20 @@ struct SignInWithGitHubViewModel: UIViewControllerRepresentable {
 
             if let user = Auth.auth().currentUser {
                 self.saveUserInfoToFirestore(user: user, userData: userData, email: email)
+                print("깃허브 로그인?")
             }
+            print("깃허브 로그인 완료")
 
             DispatchQueue.main.async {
-                self.isSignedIn = true
+                print("깃허브 로그인 완료1")
                 self.isLoading = false
                 self.isGitHubLoggedIn = true
                 self.isPresented = false
                 UserDefaultsManager.shared.isSignedIn = true
                 UserDefaultsManager.shared.isGitHubLoggedIn = true
+                UserDefaultsManager.shared.githubAccessToken = accessToken
+                print("UserDefaults - isSignedIn (after GitHub login): \(UserDefaultsManager.shared.isSignedIn)")
+                print("UserDefaults - isGitHubLoggedIn (after GitHub login): \(UserDefaultsManager.shared.isGitHubLoggedIn)")
             }
         }
     }
@@ -231,7 +234,9 @@ struct SignInWithGitHubViewModel: UIViewControllerRepresentable {
             "email": email ?? (userData["email"] as? String ?? ""),
             "displayName": login,
             "photoURL": userData["avatar_url"] as? String ?? "",
-            "LoginType": "GITHUB"
+            "login-type": "GITHUB",
+            "github-connection": true,
+            "github-email": email ?? (userData["email"] as? String ?? ""),
         ]) { error in
             if let error = error {
                 print("Error save: \(error.localizedDescription)")
