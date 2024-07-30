@@ -92,10 +92,8 @@ class SignInWithGoogleViewModel: ObservableObject {
             }
             
             if let document = document, document.exists {
-                // User already exists, no need to save again
                 print("User already exists in Firestore.")
             } else {
-                // User does not exist, save the data
                 let userData: [String: Any] = [
                     "uid": user.uid,
                     "email": user.email ?? "",

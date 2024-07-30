@@ -13,11 +13,12 @@ import AuthenticationServices
 struct AuthContentView: View {
     @StateObject private var googleSignInVM = SignInWithGoogleViewModel()
     @StateObject private var appleSignInVM = SignInWithAppleViewModel()
+    @StateObject private var gitHubSignInVM = SignInWithGitHubViewModel()
+    @StateObject private var socialLogInVM = SocialGithubLoginViewModel()
 
-    @AppStorage("isSignedIn") private var isSignedIn = UserDefaultsManager.shared.isSignedIn
-    @AppStorage("isGitHubLoggedIn") private var isGitHubLoggedIn = UserDefaultsManager.shared.isGitHubLoggedIn
+    @AppStorage("isSignedIn") private var isSignedIn: Bool = UserDefaultsManager.shared.isSignedIn
+    @AppStorage("isGitHubLoggedIn") private var isGitHubLoggedIn: Bool = UserDefaultsManager.shared.isGitHubLoggedIn
 
-    @State private var isPresented = false
     @State private var isLoading = false
 
     var body: some View {
@@ -26,6 +27,11 @@ struct AuthContentView: View {
                 Text("Signed In!")
                 if isGitHubLoggedIn {
                     Text("GitHub Logged In!")
+                } else {
+                    Text("Please complete GitHub sign-in.")
+                    
+                    SocialGithubLoginView(viewModel: socialLogInVM)
+                        .padding(.top, 300)
                 }
                 
                 Button(action: logout) {
@@ -34,43 +40,13 @@ struct AuthContentView: View {
                 }
             } else {
                 VStack(spacing: 24) {
-                    VStack {
-                        // MARK: - GitHub
-                        Button(action: { isPresented = true }) {
-                            Text("Sign In with GitHub")
-                        }
-                        .fullScreenCover(isPresented: $isPresented) {
-                            SignInWithGitHubViewModel(
-                                isGitHubLoggedIn: $isGitHubLoggedIn,
-                                isPresented: $isPresented,
-                                isLoading: $isLoading
-                            )
-                                .overlay(
-                                    Group {
-                                        if isLoading {
-                                            ProgressView()
-                                                .progressViewStyle(CircularProgressViewStyle())
-                                                .background(Color.red.opacity(0.8))
-                                                .edgesIgnoringSafeArea(.all)
-                                        }
-                                    }
-                                )
-                        }
-                        .padding()
-                        .frame(width: 240)
-                        .background(.clear)
-                        .foregroundColor(.black)
-                        .overlay(
-                             RoundedRectangle(cornerRadius: 8)
-                                .stroke(Color.black, lineWidth: 1.4)
-                         )
-                    }
-                    .padding(.top, 300)
+                    SignInWithGitHubView(viewModel: gitHubSignInVM)
+                        .padding(.top, 300)
                     
                     HStack(spacing: 40) {
-                        // MARK: - Google
+                        // Google Sign-In
                         Button(action: { googleSignInVM.signIn() }) {
-                            Text("Sign In Google")
+                            Text("Sign In with Google")
                         }
                         .padding()
                         .frame(width: 80, height: 80)
@@ -78,11 +54,11 @@ struct AuthContentView: View {
                         .foregroundColor(.black)
                         .cornerRadius(100)
                         
-                        // MARK: - Apple
+                        // Apple Sign-In
                         Button(action: {
                             appleSignInVM.startSignInWithAppleFlow()
                         }) {
-                            Text("Sign in Apple")
+                            Text("Sign In with Apple")
                                 .padding()
                                 .frame(width: 80, height: 80)
                                 .background(.black)
@@ -102,6 +78,9 @@ struct AuthContentView: View {
         .onReceive(appleSignInVM.$isSignedIn) { newValue in
             isSignedIn = newValue
         }
+        .onReceive(gitHubSignInVM.$isGitHubLoggedIn) { newValue in
+            isGitHubLoggedIn = newValue
+        }
     }
 
     private func checkLoginStatus() {
@@ -111,7 +90,6 @@ struct AuthContentView: View {
         printUserDefaultsValues()
     }
     
-    // 깃허브 로그인 ViewModel로 이동 시켜야 함
     private func checkGitHubAutoLogin() {
         if let accessToken = UserDefaultsManager.shared.githubAccessToken {
             let credential = OAuthProvider.credential(withProviderID: "github.com", accessToken: accessToken)
@@ -123,13 +101,13 @@ struct AuthContentView: View {
                     UserDefaultsManager.shared.isGitHubLoggedIn = false
                     return
                 }
-                // 로그인 성공
+                // Successful login
                 UserDefaultsManager.shared.isSignedIn = true
                 UserDefaultsManager.shared.isGitHubLoggedIn = true
                 printUserDefaultsValues()
             }
         } else {
-            print("GitHub 토큰 없음")
+            print("No GitHub token found")
         }
     }
     
@@ -140,17 +118,17 @@ struct AuthContentView: View {
     }
     
     private func logout() {
-        // Firebase logout
+        // Firebase sign out
         do {
             try Auth.auth().signOut()
         } catch let signOutError as NSError {
             print("Error signing out: \(signOutError.localizedDescription)")
         }
 
-        // Google logout
+        // Google sign out
         GIDSignIn.sharedInstance.signOut()
 
-        // UserDefaults reset
+        // Clear UserDefaults
         UserDefaultsManager.shared.clearAll()
         isSignedIn = false
         isGitHubLoggedIn = false

@@ -4,6 +4,7 @@
 //
 //  Created by 밀가루 on 7/27/24.
 //
+
 import SwiftUI
 import Foundation
 import Firebase
@@ -13,8 +14,10 @@ import AuthenticationServices
 import CryptoKit
 
 class SignInWithAppleViewModel: NSObject, ObservableObject {
-    private var currentNonce: String?
     @Published var isSignedIn: Bool = UserDefaultsManager.shared.isSignedIn
+    @Published var isGitHubLoggedIn: Bool = false
+    
+    private var currentNonce: String?
 
     override init() {
         super.init()
@@ -106,27 +109,51 @@ class SignInWithAppleViewModel: NSObject, ObservableObject {
         let db = Firestore.firestore()
         let userRef = db.collection("users").document(user.uid)
         
-        // Check if the user already exists
-        userRef.getDocument { (document, error) in
+        userRef.getDocument { [weak self] (document, error) in
             if let document = document, document.exists {
-                // User already exists, no need to save again
-                print("User already exists in Firestore.")
+                self?.checkGitHubLoginStatus(userRef: userRef)
             } else {
-                // User does not exist, save the data
                 userRef.setData([
                     "uid": user.uid,
-                    "displayName": user.displayName ?? "",
-                    "photoURL": user.photoURL?.absoluteString ?? "",
                     "login-type": "APPLE",
-                    "github-connection": false,
-                    "github-email": "",
                 ]) { error in
                     if let error = error {
                         print("Firestore에 사용자 정보를 저장하는 중 오류 발생: \(error.localizedDescription)")
                     } else {
                         print("Firestore에 사용자 정보를 성공적으로 저장했습니다.")
+                        self?.checkGitHubLoginStatus(userRef: userRef)
                     }
                 }
+            }
+        }
+    }
+
+    private func checkGitHubLoginStatus(userRef: DocumentReference) {
+        userRef.getDocument { [weak self] (document, error) in
+            if let error = error {
+                print("Error fetching user data: \(error.localizedDescription)")
+                return
+            }
+
+            if let document = document, document.exists {
+                if let data = document.data(), data["github-email"] as? String != nil {
+                    DispatchQueue.main.async {
+                        self?.isGitHubLoggedIn = true
+                        UserDefaultsManager.shared.isGitHubLoggedIn = true
+                    }
+                    print("GitHub 로그인되어 있음")
+                } else {
+                    DispatchQueue.main.async {
+                        self?.isGitHubLoggedIn = false
+                        UserDefaultsManager.shared.isGitHubLoggedIn = false
+                    }
+                    print("GitHub에 로그인되어 있지 않음")
+                }
+                DispatchQueue.main.async {
+                    self?.objectWillChange.send()
+                }
+            } else {
+                print("Document X")
             }
         }
     }
@@ -148,7 +175,7 @@ extension SignInWithAppleViewModel: ASAuthorizationControllerDelegate {
             }
 
             let credential = OAuthProvider.credential(withProviderID: "apple.com", idToken: idTokenString, rawNonce: nonce)
-            Auth.auth().signIn(with: credential) { (authResult, error) in
+            Auth.auth().signIn(with: credential) { [weak self] (authResult, error) in
                 if let error = error {
                     print("Apple 로그인하는 중에 오류 발생: \(error.localizedDescription)")
                     return
@@ -159,14 +186,12 @@ extension SignInWithAppleViewModel: ASAuthorizationControllerDelegate {
                     return
                 }
                 
-                // Save user information to Firestore
-                self.saveUserInfoToFirestore(user: user, appleIDCredential: appleIDCredential)
+                self?.saveUserInfoToFirestore(user: user, appleIDCredential: appleIDCredential)
                 
-                // Update Apple sign-in state
                 UserDefaultsManager.shared.appleUserId = appleIDCredential.user
                 UserDefaultsManager.shared.isSignedIn = true
-                self.isSignedIn = true
-                self.objectWillChange.send()
+                self?.isSignedIn = true
+                self?.objectWillChange.send()
             }
         }
     }

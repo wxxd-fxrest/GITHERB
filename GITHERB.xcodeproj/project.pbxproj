@@ -13,6 +13,7 @@
 		0B3FEC1A2C54CFE400C555CB /* GoogleSignInSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 0B3FEC192C54CFE400C555CB /* GoogleSignInSwift */; };
 		0B3FEC202C54D82800C555CB /* SignInWithGoogleViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B3FEC1F2C54D82800C555CB /* SignInWithGoogleViewModel.swift */; };
 		0B5570AF2C54F23D00454FAF /* SignInWithAppleViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B5570AE2C54F23D00454FAF /* SignInWithAppleViewModel.swift */; };
+		0B5D1A772C58F7F500DD7D40 /* SocialGithubLoginViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B5D1A762C58F7F500DD7D40 /* SocialGithubLoginViewModel.swift */; };
 		0B6E44252C4F994600264D0D /* SignInWithGitHubViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B6E44242C4F994600264D0D /* SignInWithGitHubViewModel.swift */; };
 		0BC977C52C4E1DF600BE0EC1 /* GITHERBApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BC977C42C4E1DF600BE0EC1 /* GITHERBApp.swift */; };
 		0BC977C72C4E1DF600BE0EC1 /* AuthContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BC977C62C4E1DF600BE0EC1 /* AuthContentView.swift */; };
@@ -35,6 +36,7 @@
 		0B3FEC1F2C54D82800C555CB /* SignInWithGoogleViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInWithGoogleViewModel.swift; sourceTree = "<group>"; };
 		0B5570AE2C54F23D00454FAF /* SignInWithAppleViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInWithAppleViewModel.swift; sourceTree = "<group>"; };
 		0B5570B02C54F3A100454FAF /* GITHERB.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = GITHERB.entitlements; sourceTree = "<group>"; };
+		0B5D1A762C58F7F500DD7D40 /* SocialGithubLoginViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocialGithubLoginViewModel.swift; sourceTree = "<group>"; };
 		0B6E44242C4F994600264D0D /* SignInWithGitHubViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInWithGitHubViewModel.swift; sourceTree = "<group>"; };
 		0B817AF12C52153A009DD1C0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		0BC977C12C4E1DF600BE0EC1 /* GITHERB.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GITHERB.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -74,13 +76,6 @@
 			path = Manager;
 			sourceTree = "<group>";
 		};
-		0B6E44282C4F99DB00264D0D /* Model */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Model;
-			sourceTree = "<group>";
-		};
 		0BC977B82C4E1DF600BE0EC1 = {
 			isa = PBXGroup;
 			children = (
@@ -103,7 +98,6 @@
 			children = (
 				0B5570B02C54F3A100454FAF /* GITHERB.entitlements */,
 				0B3534F92C53A40300F4B57C /* Manager */,
-				0B6E44282C4F99DB00264D0D /* Model */,
 				0BD423F02C4E24FD005E4D63 /* View */,
 				0BD423F12C4E2505005E4D63 /* ViewModel */,
 				0BC977C42C4E1DF600BE0EC1 /* GITHERBApp.swift */,
@@ -150,6 +144,7 @@
 				0B6E44242C4F994600264D0D /* SignInWithGitHubViewModel.swift */,
 				0B3FEC1F2C54D82800C555CB /* SignInWithGoogleViewModel.swift */,
 				0B5570AE2C54F23D00454FAF /* SignInWithAppleViewModel.swift */,
+				0B5D1A762C58F7F500DD7D40 /* SocialGithubLoginViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -245,6 +240,7 @@
 				0BC977C72C4E1DF600BE0EC1 /* AuthContentView.swift in Sources */,
 				0B5570AF2C54F23D00454FAF /* SignInWithAppleViewModel.swift in Sources */,
 				0B3534FB2C53A41700F4B57C /* UserDefaultsManager.swift in Sources */,
+				0B5D1A772C58F7F500DD7D40 /* SocialGithubLoginViewModel.swift in Sources */,
 				0BC977C52C4E1DF600BE0EC1 /* GITHERBApp.swift in Sources */,
 				0BD423F82C4E25CB005E4D63 /* CalendarContentView.swift in Sources */,
 				0BD423F42C4E257A005E4D63 /* MainContentView.swift in Sources */,

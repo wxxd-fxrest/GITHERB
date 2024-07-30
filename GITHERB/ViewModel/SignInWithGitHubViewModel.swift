@@ -11,24 +11,20 @@ import Firebase
 import FirebaseAuth
 import FirebaseFirestore
 
-struct SignInWithGitHubViewModel: UIViewControllerRepresentable {
-    @Binding var isGitHubLoggedIn: Bool
-    @Binding var isPresented: Bool
-    @Binding var isLoading: Bool
-    
+class SignInWithGitHubViewModel: NSObject, ObservableObject {
+    @Published var isGitHubLoggedIn: Bool = false
+    @Published var isPresented: Bool = false
+    @Published var isLoading: Bool = false
+
     private var clientID: String
     private var clientPW: String
     private var urlScheme: String
 
-    init(isGitHubLoggedIn: Binding<Bool>, isPresented: Binding<Bool>, isLoading: Binding<Bool>) {
-        self._isGitHubLoggedIn = isGitHubLoggedIn
-        self._isPresented = isPresented
-        self._isLoading = isLoading
-        
+    override init() {
         if let path = Bundle.main.path(forResource: "LoginKey", ofType: "plist"),
            let dictionary = NSDictionary(contentsOfFile: path) as? [String: AnyObject],
-           let clientID = dictionary["GihubClientID"] as? String,
-           let clientPW = dictionary["GihubClientPW"] as? String,
+           let clientID = dictionary["GithubClientID"] as? String,
+           let clientPW = dictionary["GithubClientPW"] as? String,
            let urlScheme = dictionary["GithubURLScheme"] as? String {
             self.clientID = clientID
             self.clientPW = clientPW
@@ -38,21 +34,7 @@ struct SignInWithGitHubViewModel: UIViewControllerRepresentable {
         }
     }
 
-    class Coordinator: NSObject, ASWebAuthenticationPresentationContextProviding {
-        var parent: SignInWithGitHubViewModel
-
-        init(parent: SignInWithGitHubViewModel) {
-            self.parent = parent
-        }
-
-        func presentationAnchor(for session: ASWebAuthenticationSession) -> ASPresentationAnchor {
-            return UIApplication.shared.windows.first { $0.isKeyWindow }!
-        }
-    }
-
-    func makeUIViewController(context: Context) -> UIViewController {
-        let vc = UIViewController()
-
+    func startGitHubSignIn() {
         let authSession = ASWebAuthenticationSession(
             url: URL(string: "https://github.com/login/oauth/authorize?client_id=\(self.clientID)&scope=user:email")!,
             callbackURLScheme: urlScheme) { callbackURL, error in
@@ -78,21 +60,13 @@ struct SignInWithGitHubViewModel: UIViewControllerRepresentable {
                     self.exchangeCodeForToken(code: code)
                 }
             }
-        
-        authSession.presentationContextProvider = context.coordinator
+
+        authSession.presentationContextProvider = self
         authSession.prefersEphemeralWebBrowserSession = true // 풀 스크린 설정
         authSession.start()
-        
-        return vc
     }
 
-    func updateUIViewController(_ uiViewController: UIViewController, context: Context) {}
-
-    func makeCoordinator() -> Coordinator {
-        Coordinator(parent: self)
-    }
-
-    func exchangeCodeForToken(code: String) {
+    private func exchangeCodeForToken(code: String) {
         let url = URL(string: "https://github.com/login/oauth/access_token")!
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
@@ -133,7 +107,7 @@ struct SignInWithGitHubViewModel: UIViewControllerRepresentable {
         }.resume()
     }
 
-    func fetchGitHubUserData(accessToken: String) {
+    private func fetchGitHubUserData(accessToken: String) {
         let url = URL(string: "https://api.github.com/user")!
         var request = URLRequest(url: url)
         request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
@@ -164,7 +138,7 @@ struct SignInWithGitHubViewModel: UIViewControllerRepresentable {
         }.resume()
     }
 
-    func fetchGitHubUserEmail(accessToken: String, completion: @escaping (String?) -> Void) {
+    private func fetchGitHubUserEmail(accessToken: String, completion: @escaping (String?) -> Void) {
         let url = URL(string: "https://api.github.com/user/emails")!
         var request = URLRequest(url: url)
         request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
@@ -186,8 +160,8 @@ struct SignInWithGitHubViewModel: UIViewControllerRepresentable {
             completion(primaryEmail)
         }.resume()
     }
- 
-    func signInToFirebaseWithGitHubUserData(userData: [String: Any], email: String?, accessToken: String) {
+
+    private func signInToFirebaseWithGitHubUserData(userData: [String: Any], email: String?, accessToken: String) {
         DispatchQueue.main.async {
             self.isLoading = true
         }
@@ -203,31 +177,56 @@ struct SignInWithGitHubViewModel: UIViewControllerRepresentable {
                 return
             }
 
-            if let user = Auth.auth().currentUser {
-                self.saveUserInfoToFirestore(user: user, userData: userData, email: email)
-                print("깃허브 로그인?")
+            guard let user = Auth.auth().currentUser else {
+                print("User not found after sign-in")
+                DispatchQueue.main.async {
+                    self.isLoading = false
+                    self.isPresented = false
+                }
+                return
             }
-            print("깃허브 로그인 완료")
 
-            DispatchQueue.main.async {
-                print("깃허브 로그인 완료1")
-                self.isLoading = false
-                self.isGitHubLoggedIn = true
-                self.isPresented = false
-                UserDefaultsManager.shared.isSignedIn = true
-                UserDefaultsManager.shared.isGitHubLoggedIn = true
-                UserDefaultsManager.shared.githubAccessToken = accessToken
-                print("UserDefaults - isSignedIn (after GitHub login): \(UserDefaultsManager.shared.isSignedIn)")
-                print("UserDefaults - isGitHubLoggedIn (after GitHub login): \(UserDefaultsManager.shared.isGitHubLoggedIn)")
+            let db = Firestore.firestore()
+            let userRef = db.collection("users").document(user.uid)
+
+            userRef.getDocument { document, error in
+                if let error = error {
+                    print("Error fetching user data: \(error.localizedDescription)")
+                    DispatchQueue.main.async {
+                        self.isLoading = false
+                        self.isPresented = false
+                    }
+                    return
+                }
+
+                if let document = document, document.exists {
+                    DispatchQueue.main.async {
+                        self.isLoading = false
+                        self.isGitHubLoggedIn = true
+                        self.isPresented = false
+                        UserDefaultsManager.shared.isSignedIn = true
+                        UserDefaultsManager.shared.isGitHubLoggedIn = true
+                        UserDefaultsManager.shared.githubAccessToken = accessToken
+                    }
+                } else {
+                    self.saveUserInfoToFirestore(user: user, userData: userData, email: email)
+                    DispatchQueue.main.async {
+                        self.isGitHubLoggedIn = true
+                        self.isPresented = false
+                        UserDefaultsManager.shared.isSignedIn = true
+                        UserDefaultsManager.shared.isGitHubLoggedIn = true
+                        UserDefaultsManager.shared.githubAccessToken = accessToken
+                    }
+                }
             }
         }
     }
 
-    func saveUserInfoToFirestore(user: User, userData: [String: Any], email: String?) {
+    private func saveUserInfoToFirestore(user: User, userData: [String: Any], email: String?) {
         let db = Firestore.firestore()
 
         let login = userData["login"] as? String ?? ""
-        
+
         let userRef = db.collection("users").document(user.uid)
         userRef.setData([
             "uid": user.uid,
@@ -243,6 +242,44 @@ struct SignInWithGitHubViewModel: UIViewControllerRepresentable {
             } else {
                 print("success data")
             }
+        }
+    }
+}
+
+extension SignInWithGitHubViewModel: ASWebAuthenticationPresentationContextProviding {
+    func presentationAnchor(for session: ASWebAuthenticationSession) -> ASPresentationAnchor {
+        return UIApplication.shared.windows.first { $0.isKeyWindow }!
+    }
+}
+
+struct SignInWithGitHubView: View {
+    @ObservedObject var viewModel: SignInWithGitHubViewModel
+
+    var body: some View {
+        VStack {
+            if viewModel.isLoading {
+                ProgressView()
+                    .progressViewStyle(CircularProgressViewStyle())
+                    .background(Color.red.opacity(0.8))
+                    .edgesIgnoringSafeArea(.all)
+            } else {
+                Button(action: {
+                    viewModel.startGitHubSignIn()
+                }) {
+                    Text("Sign In with GitHub")
+                }
+                .padding()
+                .frame(width: 240)
+                .background(Color.clear)
+                .foregroundColor(.black)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 8)
+                        .stroke(Color.black, lineWidth: 1.4)
+                )
+            }
+        }
+        .fullScreenCover(isPresented: $viewModel.isPresented) {
+            EmptyView()
         }
     }
 }
