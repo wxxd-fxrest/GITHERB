@@ -7,9 +7,9 @@
 
 import SwiftUI
 import AuthenticationServices
-import Combine
 import Firebase
 import FirebaseAuth
+import Combine
 
 class GitHubSignInViewModel: ObservableObject {
     @Published var isSignedIn = false
