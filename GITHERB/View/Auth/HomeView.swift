@@ -63,3 +63,7 @@ struct HomeView_Previews: PreviewProvider {
         HomeView()
     }
 }
+
+#Preview {
+    HomeView()
+}
