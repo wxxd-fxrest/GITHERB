@@ -17,6 +17,7 @@
 		0B8BB2A92C5CF106009003B5 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B8BB2A82C5CF106009003B5 /* HomeView.swift */; };
 		0B8BB2B22C5D2C02009003B5 /* AppleSignInViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B8BB2B12C5D2C02009003B5 /* AppleSignInViewModel.swift */; };
 		0B8BB2B42C5D2C0D009003B5 /* GitHubSignInViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B8BB2B32C5D2C0D009003B5 /* GitHubSignInViewModel.swift */; };
+		0BA7CD4C2C5E2B240061CB59 /* GithubLinkView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BA7CD4B2C5E2B240061CB59 /* GithubLinkView.swift */; };
 		0BC977C52C4E1DF600BE0EC1 /* GITHERBApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BC977C42C4E1DF600BE0EC1 /* GITHERBApp.swift */; };
 		0BC977C92C4E1DF800BE0EC1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0BC977C82C4E1DF800BE0EC1 /* Assets.xcassets */; };
 		0BC977CC2C4E1DF800BE0EC1 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0BC977CB2C4E1DF800BE0EC1 /* Preview Assets.xcassets */; };
@@ -42,6 +43,7 @@
 		0B8BB2A82C5CF106009003B5 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		0B8BB2B12C5D2C02009003B5 /* AppleSignInViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleSignInViewModel.swift; sourceTree = "<group>"; };
 		0B8BB2B32C5D2C0D009003B5 /* GitHubSignInViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitHubSignInViewModel.swift; sourceTree = "<group>"; };
+		0BA7CD4B2C5E2B240061CB59 /* GithubLinkView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GithubLinkView.swift; sourceTree = "<group>"; };
 		0BC977C12C4E1DF600BE0EC1 /* GITHERB.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GITHERB.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0BC977C42C4E1DF600BE0EC1 /* GITHERBApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GITHERBApp.swift; sourceTree = "<group>"; };
 		0BC977C82C4E1DF800BE0EC1 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -84,6 +86,7 @@
 				0B8BB2A82C5CF106009003B5 /* HomeView.swift */,
 				0B8BB2A22C5CC0D5009003B5 /* AppleSignInView.swift */,
 				0B8BB2A42C5CC104009003B5 /* GitHubSignInView.swift */,
+				0BA7CD4B2C5E2B240061CB59 /* GithubLinkView.swift */,
 			);
 			path = Auth;
 			sourceTree = "<group>";
@@ -245,6 +248,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0BD423FA2C4E25D7005E4D63 /* ProfileContentView.swift in Sources */,
+				0BA7CD4C2C5E2B240061CB59 /* GithubLinkView.swift in Sources */,
 				0BD423F62C4E258D005E4D63 /* TodoContentView.swift in Sources */,
 				0B8BB2A92C5CF106009003B5 /* HomeView.swift in Sources */,
 				0B8BB2A32C5CC0D5009003B5 /* AppleSignInView.swift in Sources */,
