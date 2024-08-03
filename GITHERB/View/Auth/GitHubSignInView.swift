@@ -19,11 +19,17 @@ struct GitHubSignInView: View {
                 Button(action: {
                     viewModel.startGitHubSignIn()
                 }) {
-                    Text("GitHub로 로그인")
-                        .padding()
-                        .background(Color.black)
-                        .foregroundColor(.white)
-                        .cornerRadius(8)
+                    HStack(spacing: 16) {
+                        Image("GithubMark")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 24, height: 24)
+                        Text("GitHub로 로그인")
+                            .font(.system(size: 20, weight: .medium))
+                    }
+                    .frame(width: 300, height: 52)
+                    .background(RoundedRectangle(cornerRadius: 14).fill(Color("AuthBackground")))
+                    .foregroundColor(Color("AuthFont"))
                 }
             }
         }
@@ -36,3 +42,6 @@ struct GitHubSignInView_Previews: PreviewProvider {
     }
 }
 
+#Preview {
+    GitHubSignInView()
+}
