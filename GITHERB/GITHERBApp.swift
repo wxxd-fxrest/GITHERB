@@ -36,8 +36,8 @@ struct ContentView: View {
                     .edgesIgnoringSafeArea(.all)
                 
                 Group {
-                    if viewModel.isSignedIn {
-                        HomeView()
+                    if !viewModel.isSignedIn {
+                        MainContentView()
                     } else {
                         VStack(spacing: 114) {
                             Spacer()
