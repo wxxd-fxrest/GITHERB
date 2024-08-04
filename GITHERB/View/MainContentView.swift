@@ -61,7 +61,6 @@ struct MainContentView: View {
 
         VStack {
             Spacer().frame(height: 32)
-            
             // 상단 현재 수치, 목표 수치
             HStack {
                 Text("오늘 목표까지")

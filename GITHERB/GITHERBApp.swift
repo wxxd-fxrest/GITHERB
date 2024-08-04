@@ -63,7 +63,6 @@ struct ContentView: View {
                             }
                         }
                     }
-                    
                     NavigationLink(
                         destination: GithubLinkView(viewModel: appleLoginVM),
                         isActive: $appleLoginVM.showGitHubSignIn
@@ -88,7 +87,7 @@ struct ContentView: View {
         
         printUserDefaultsValues()
      }
-    
+
     private func printUserDefaultsValues() {
         print("ContentView - isSignedIn: \(UserDefaultsManager.shared.isSignedIn)")
         print("ContentView - isGitHubLoggedIn: \(UserDefaultsManager.shared.isGitHubLoggedIn)")
