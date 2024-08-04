@@ -12,11 +12,21 @@ import FirebaseAuth
 import FirebaseFirestore
 
 class AppleSignInViewModel: ObservableObject {
-    @Published var isSignedIn = false
-    @Published var showGitHubSignIn = false
-    @Published var showAlert = false
-    @Published var alertMessage = ""
-
+    @Published var isSignedIn: Bool {
+        didSet {
+            UserDefaultsManager.shared.isSignedIn = isSignedIn
+        }
+    }
+    @Published var isGitHubLoggedIn: Bool {
+        didSet {
+            UserDefaultsManager.shared.isGitHubLoggedIn = isGitHubLoggedIn
+        }
+    }
+    @Published var showGitHubSignIn: Bool = false
+    @Published var showAlert: Bool = false
+    @Published var alertMessage: String = ""
+    @Published var isLoading: Bool = false // 로딩 상태 추가
+    
     private var authSession: ASWebAuthenticationSession?
     private let coordinator = AppleSignInCoordinator()
     
@@ -33,6 +43,8 @@ class AppleSignInViewModel: ObservableObject {
             self.clientID = clientID
             self.clientPW = clientPW
             self.urlScheme = urlScheme
+            self.isSignedIn = UserDefaultsManager.shared.isSignedIn
+            self.isGitHubLoggedIn = UserDefaultsManager.shared.isGitHubLoggedIn
         } else {
             fatalError("LoginKey.plist에서 ClientID, ClientPW, urlScheme 찾을 수 없음")
         }
@@ -48,12 +60,19 @@ class AppleSignInViewModel: ObservableObject {
             print("ID 토큰을 가져올 수 없음")
             return
         }
+        
+        // 키체인에 Apple User ID 저장
+         let appleUserID = appleIDCredential.user
+         KeychainManager.shared.save(key: "appleUserId", value: appleUserID)
 
         let credential = OAuthProvider.credential(withProviderID: "apple.com",
                                                   idToken: identityTokenString,
                                                   rawNonce: nil)
 
+        self.isLoading = true // 로딩 시작
+        
         Auth.auth().signIn(with: credential) { (authResult, error) in
+            self.isLoading = false // 로딩 종료
             if let error = error {
                 if let authError = error as NSError?,
                    authError.code == AuthErrorCode.accountExistsWithDifferentCredential.rawValue {
@@ -86,7 +105,13 @@ class AppleSignInViewModel: ObservableObject {
             }
         }
         
-        showGitHubSignIn = !isLinkedWithGitHub
+        if isLinkedWithGitHub {
+            self.isSignedIn = true
+            self.isGitHubLoggedIn = true
+            // 여기서 추가 작업을 할 수 있음 (예: 사용자 데이터 가져오기 등)
+        } else {
+            showGitHubSignIn = true
+        }
     }
     
     func linkGitHubAccount() {
@@ -191,8 +216,10 @@ class AppleSignInViewModel: ObservableObject {
             self.fetchGitHubUserEmail(accessToken: accessToken) { email in
                 self.saveUserInfoToFirestore(userData: userData, email: email, accessToken: accessToken)
                 DispatchQueue.main.async {
-                    UserDefaultsManager.shared.isSignedIn = true
-                    UserDefaultsManager.shared.githubAccessToken = accessToken
+                    self.isSignedIn = true // 여기에서 로그인 상태를 true로 설정
+                    self.isGitHubLoggedIn = true
+                    // 키체인에 깃허브 액세스 토큰 저장
+                    KeychainManager.shared.save(key: "githubAccessToken", value: accessToken)
                 }
             }
         }.resume()
@@ -202,8 +229,11 @@ class AppleSignInViewModel: ObservableObject {
         let url = URL(string: "https://api.github.com/user/emails")!
         var request = URLRequest(url: url)
         request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
-
+        
+        self.isLoading = true // 로딩 시작
+        
         URLSession.shared.dataTask(with: request) { data, response, error in
+            self.isLoading = false // 로딩 종료
             guard let data = data, error == nil else {
                 print("사용자 이메일 가져오는 중 오류 발생: \(String(describing: error))")
                 completion(nil)

@@ -13,8 +13,6 @@
 		0B3FEC1A2C54CFE400C555CB /* GoogleSignInSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 0B3FEC192C54CFE400C555CB /* GoogleSignInSwift */; };
 		0B8BB2A32C5CC0D5009003B5 /* AppleSignInView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B8BB2A22C5CC0D5009003B5 /* AppleSignInView.swift */; };
 		0B8BB2A52C5CC104009003B5 /* GitHubSignInView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B8BB2A42C5CC104009003B5 /* GitHubSignInView.swift */; };
-		0B8BB2A72C5CF07A009003B5 /* AuthViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B8BB2A62C5CF07A009003B5 /* AuthViewModel.swift */; };
-		0B8BB2A92C5CF106009003B5 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B8BB2A82C5CF106009003B5 /* HomeView.swift */; };
 		0B8BB2B22C5D2C02009003B5 /* AppleSignInViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B8BB2B12C5D2C02009003B5 /* AppleSignInViewModel.swift */; };
 		0B8BB2B42C5D2C0D009003B5 /* GitHubSignInViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B8BB2B32C5D2C0D009003B5 /* GitHubSignInViewModel.swift */; };
 		0BA7CD4C2C5E2B240061CB59 /* GithubLinkView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BA7CD4B2C5E2B240061CB59 /* GithubLinkView.swift */; };
@@ -39,8 +37,6 @@
 		0B817AF12C52153A009DD1C0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		0B8BB2A22C5CC0D5009003B5 /* AppleSignInView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleSignInView.swift; sourceTree = "<group>"; };
 		0B8BB2A42C5CC104009003B5 /* GitHubSignInView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitHubSignInView.swift; sourceTree = "<group>"; };
-		0B8BB2A62C5CF07A009003B5 /* AuthViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthViewModel.swift; sourceTree = "<group>"; };
-		0B8BB2A82C5CF106009003B5 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		0B8BB2B12C5D2C02009003B5 /* AppleSignInViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleSignInViewModel.swift; sourceTree = "<group>"; };
 		0B8BB2B32C5D2C0D009003B5 /* GitHubSignInViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitHubSignInViewModel.swift; sourceTree = "<group>"; };
 		0BA7CD4B2C5E2B240061CB59 /* GithubLinkView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GithubLinkView.swift; sourceTree = "<group>"; };
@@ -83,7 +79,6 @@
 		0B8BB2AC2C5D1861009003B5 /* Auth */ = {
 			isa = PBXGroup;
 			children = (
-				0B8BB2A82C5CF106009003B5 /* HomeView.swift */,
 				0B8BB2A22C5CC0D5009003B5 /* AppleSignInView.swift */,
 				0B8BB2A42C5CC104009003B5 /* GitHubSignInView.swift */,
 				0BA7CD4B2C5E2B240061CB59 /* GithubLinkView.swift */,
@@ -156,7 +151,6 @@
 		0BD423F12C4E2505005E4D63 /* ViewModel */ = {
 			isa = PBXGroup;
 			children = (
-				0B8BB2A62C5CF07A009003B5 /* AuthViewModel.swift */,
 				0B8BB2B12C5D2C02009003B5 /* AppleSignInViewModel.swift */,
 				0B8BB2B32C5D2C0D009003B5 /* GitHubSignInViewModel.swift */,
 			);
@@ -250,12 +244,10 @@
 				0BD423FA2C4E25D7005E4D63 /* ProfileContentView.swift in Sources */,
 				0BA7CD4C2C5E2B240061CB59 /* GithubLinkView.swift in Sources */,
 				0BD423F62C4E258D005E4D63 /* TodoContentView.swift in Sources */,
-				0B8BB2A92C5CF106009003B5 /* HomeView.swift in Sources */,
 				0B8BB2A32C5CC0D5009003B5 /* AppleSignInView.swift in Sources */,
 				0B3534FB2C53A41700F4B57C /* UserDefaultsManager.swift in Sources */,
 				0B8BB2B42C5D2C0D009003B5 /* GitHubSignInViewModel.swift in Sources */,
 				0B8BB2A52C5CC104009003B5 /* GitHubSignInView.swift in Sources */,
-				0B8BB2A72C5CF07A009003B5 /* AuthViewModel.swift in Sources */,
 				0BC977C52C4E1DF600BE0EC1 /* GITHERBApp.swift in Sources */,
 				0BD423F82C4E25CB005E4D63 /* CalendarContentView.swift in Sources */,
 				0BD423F42C4E257A005E4D63 /* MainContentView.swift in Sources */,

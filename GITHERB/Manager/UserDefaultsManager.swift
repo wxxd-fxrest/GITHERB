@@ -10,7 +10,7 @@ import Foundation
 final class KeychainManager {
     static let shared = KeychainManager()
     
-    func save(key: String, value: String) {
+    func save(key: String, value: String) -> Bool {
         let data = Data(value.utf8)
         let query = [
             kSecClass: kSecClassGenericPassword,
@@ -18,7 +18,12 @@ final class KeychainManager {
             kSecValueData: data
         ] as [String: Any]
         
-        SecItemAdd(query as CFDictionary, nil)
+        // 기존 항목 삭제
+        SecItemDelete(query as CFDictionary)
+        
+        // 새로운 항목 추가
+        let status = SecItemAdd(query as CFDictionary, nil)
+        return status == errSecSuccess
     }
     
     func load(key: String) -> String? {
@@ -30,23 +35,22 @@ final class KeychainManager {
         ] as [String: Any]
         
         var dataTypeRef: AnyObject?
-        let status: OSStatus = SecItemCopyMatching(query as CFDictionary, &dataTypeRef)
+        let status = SecItemCopyMatching(query as CFDictionary, &dataTypeRef)
         
-        if status == noErr {
-            if let data = dataTypeRef as? Data {
-                return String(data: data, encoding: .utf8)
-            }
+        guard status == errSecSuccess, let data = dataTypeRef as? Data else {
+            return nil
         }
-        return nil
+        return String(data: data, encoding: .utf8)
     }
     
-    func delete(key: String) {
+    func delete(key: String) -> Bool {
         let query = [
             kSecClass: kSecClassGenericPassword,
             kSecAttrAccount: key
         ] as [String: Any]
         
-        SecItemDelete(query as CFDictionary)
+        let status = SecItemDelete(query as CFDictionary)
+        return status == errSecSuccess
     }
 }
 
@@ -88,20 +92,25 @@ final class UserDefaultsManager {
     
     var appleUserId: String? {
         get {
-            let value = userDefaults.string(forKey: Keys.appleUserId)
+            let value = KeychainManager.shared.load(key: Keys.appleUserId)
             print("appleUserId: \(String(describing: value))")
             return value
         }
         set {
-            userDefaults.set(newValue, forKey: Keys.appleUserId)
-            print("appleUserId: \(String(describing: newValue))")
+            if let userId = newValue {
+                _ = KeychainManager.shared.save(key: Keys.appleUserId, value: userId)
+                print("appleUserId 저장: \(userId)")
+            } else {
+                _ = KeychainManager.shared.delete(key: Keys.appleUserId)
+                print("appleUserId 삭제")
+            }
         }
     }
     
     func clearAll() {
         userDefaults.removeObject(forKey: Keys.isSignedIn)
         userDefaults.removeObject(forKey: Keys.isGitHubLoggedIn)
-        userDefaults.removeObject(forKey: Keys.appleUserId)
+        KeychainManager.shared.delete(key: Keys.appleUserId)
         KeychainManager.shared.delete(key: Keys.githubAccessToken)
         print("모든 사용자 기본값 삭제")
     }
@@ -114,10 +123,10 @@ final class UserDefaultsManager {
         }
         set {
             if let token = newValue {
-                KeychainManager.shared.save(key: Keys.githubAccessToken, value: token)
+                _ = KeychainManager.shared.save(key: Keys.githubAccessToken, value: token)
                 print("githubAccessToken 값: \(token)")
             } else {
-                KeychainManager.shared.delete(key: Keys.githubAccessToken)
+                _ = KeychainManager.shared.delete(key: Keys.githubAccessToken)
                 print("githubAccessToken 삭제")
             }
         }
