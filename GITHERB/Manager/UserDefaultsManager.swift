@@ -89,7 +89,7 @@ final class UserDefaultsManager {
             print("isGitHubLoggedIn: \(newValue)")
         }
     }
-    
+
     var appleUserId: String? {
         get {
             let value = KeychainManager.shared.load(key: Keys.appleUserId)
@@ -107,14 +107,6 @@ final class UserDefaultsManager {
         }
     }
     
-    func clearAll() {
-        userDefaults.removeObject(forKey: Keys.isSignedIn)
-        userDefaults.removeObject(forKey: Keys.isGitHubLoggedIn)
-        KeychainManager.shared.delete(key: Keys.appleUserId)
-        KeychainManager.shared.delete(key: Keys.githubAccessToken)
-        print("모든 사용자 기본값 삭제")
-    }
-    
     var githubAccessToken: String? {
         get {
             let value = KeychainManager.shared.load(key: Keys.githubAccessToken)
@@ -130,5 +122,13 @@ final class UserDefaultsManager {
                 print("githubAccessToken 삭제")
             }
         }
+    }
+    
+    func clearAll() {
+        userDefaults.removeObject(forKey: Keys.isSignedIn)
+        userDefaults.removeObject(forKey: Keys.isGitHubLoggedIn)
+        KeychainManager.shared.delete(key: Keys.appleUserId)
+        KeychainManager.shared.delete(key: Keys.githubAccessToken)
+        print("모든 사용자 기본값 삭제")
     }
 }
