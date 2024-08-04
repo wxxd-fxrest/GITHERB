@@ -7,15 +7,24 @@
 
 import SwiftUI
 import AuthenticationServices
-import Combine
 import Firebase
 import FirebaseAuth
+import Combine
 
 class GitHubSignInViewModel: ObservableObject {
-    @Published var isSignedIn = false
-    @Published var isGitHubLoggedIn = false
+    @Published var isSignedIn: Bool {
+        didSet {
+            UserDefaultsManager.shared.isSignedIn = isSignedIn
+        }
+    }
+    @Published var isGitHubLoggedIn: Bool {
+        didSet {
+            UserDefaultsManager.shared.isGitHubLoggedIn = isGitHubLoggedIn
+        }
+    }
     @Published var githubAccessToken: String?
-    
+    @Published var isLoading: Bool = false // 로딩 상태 추가
+
     private var authSession: ASWebAuthenticationSession?
     private let coordinator = GitHubSignInCoordinator()
     
@@ -32,6 +41,8 @@ class GitHubSignInViewModel: ObservableObject {
             self.clientID = clientID
             self.clientPW = clientPW
             self.urlScheme = urlScheme
+            self.isSignedIn = UserDefaultsManager.shared.isSignedIn
+            self.isGitHubLoggedIn = UserDefaultsManager.shared.isGitHubLoggedIn
         } else {
             fatalError("LoginKey.plist에서 ClientID, ClientPW, urlScheme 찾을 수 없음")
         }
@@ -45,11 +56,13 @@ class GitHubSignInViewModel: ObservableObject {
         ) { callbackURL, error in
             if let error = error {
                 print("GitHub 인증 오류: \(error.localizedDescription)")
+                self.isLoading = false // 로딩 종료
                 return
             }
 
             guard let callbackURL = callbackURL else {
                 print("Callback URL == nil")
+                self.isLoading = false // 로딩 종료
                 return
             }
 
@@ -58,11 +71,16 @@ class GitHubSignInViewModel: ObservableObject {
 
             if let code = code {
                 self.exchangeCodeForToken(code: code)
+            } else {
+                self.isLoading = false // 로딩 종료
             }
         }
 
         authSession?.presentationContextProvider = coordinator
         authSession?.prefersEphemeralWebBrowserSession = true
+        
+        self.isLoading = true // 로딩 시작
+        
         authSession?.start()
     }
     
@@ -84,6 +102,7 @@ class GitHubSignInViewModel: ObservableObject {
         URLSession.shared.dataTask(with: request) { data, response, error in
             guard let data = data, error == nil else {
                 print("토큰의 코드 교환 중 오류 발생: \(String(describing: error))")
+                self.isLoading = false // 로딩 종료
                 return
             }
 
@@ -97,6 +116,7 @@ class GitHubSignInViewModel: ObservableObject {
                 self.fetchGitHubUserData(accessToken: accessToken)
             } else {
                 print("오류: 액세스 토큰을 받지 못함")
+                self.isLoading = false // 로딩 종료
             }
         }.resume()
     }
@@ -109,6 +129,7 @@ class GitHubSignInViewModel: ObservableObject {
         URLSession.shared.dataTask(with: request) { data, response, error in
             guard let data = data, error == nil else {
                 print("사용자 데이터 가져오는 중 오류 발생: \(String(describing: error))")
+                self.isLoading = false // 로딩 종료
                 return
             }
 
@@ -116,6 +137,7 @@ class GitHubSignInViewModel: ObservableObject {
             print("User data: \(responseString)")
 
             guard let userData = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] else {
+                self.isLoading = false // 로딩 종료
                 return
             }
 
@@ -153,11 +175,13 @@ class GitHubSignInViewModel: ObservableObject {
         Auth.auth().signIn(with: credential) { authResult, error in
             if let error = error {
                 print("GitHub 로그인 오류: \(error.localizedDescription)")
+                self.isLoading = false // 로딩 종료
                 return
             }
 
             guard let user = Auth.auth().currentUser else {
                 print("로그인 후 사용자를 찾을 수 없음")
+                self.isLoading = false // 로딩 종료
                 return
             }
 
@@ -167,16 +191,19 @@ class GitHubSignInViewModel: ObservableObject {
             userRef.getDocument { document, error in
                 if let error = error {
                     print("사용자 데이터를 가져오는 중 오류 발생 \(error.localizedDescription)")
+                    self.isLoading = false // 로딩 종료
                     return
                 }
-
+                
                 if let document = document, document.exists {
-                    if let loginType = document.get("login-type") as? String {
-                        DispatchQueue.main.async {
-                            self.isSignedIn = true
-                            self.isGitHubLoggedIn = loginType == "GITHUB"
-                            self.githubAccessToken = accessToken
-                        }
+                    let loginType = document.get("login-type") as? String
+                    DispatchQueue.main.async {
+                        self.isSignedIn = true
+                        self.isGitHubLoggedIn = loginType == "GITHUB"
+                        print("loginType == GITHUB \(loginType == "GITHUB")")
+                        // 키체인에 액세스 토큰 저장
+                        KeychainManager.shared.save(key: "githubAccessToken", value: accessToken)
+                        self.isLoading = false // 로딩 종료
                     }
                 } else {
                     self.saveUserInfoToFirestore(user: user, userData: userData, email: email, accessToken: accessToken)
@@ -205,7 +232,9 @@ class GitHubSignInViewModel: ObservableObject {
                 DispatchQueue.main.async {
                     self.isSignedIn = true
                     self.isGitHubLoggedIn = true
-                    self.githubAccessToken = accessToken
+                    // 키체인에 액세스 토큰 저장
+                    KeychainManager.shared.save(key: "githubAccessToken", value: accessToken)
+                    self.isLoading = false // 로딩 종료
                 }
             }
         }

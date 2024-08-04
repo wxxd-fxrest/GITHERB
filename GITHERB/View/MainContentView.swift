@@ -6,8 +6,14 @@
 //
 
 import SwiftUI
+import FirebaseAuth
 
 struct MainContentView: View {
+    @Environment(\.presentationMode) var presentationMode // Presentation mode 환경값 사용
+
+    @State private var showAlert = false // 알림 표시 상태
+    @State private var alertMessage = "" // 알림 메시지
+
     // 목표 수치와 현재 수치를 상태로 관리
     @State private var targetValue: Double = 33
     @State private var currentValue: Double = 0
@@ -167,6 +173,27 @@ struct MainContentView: View {
             
             // 그래프
             graphView(title: selectedStatistic)
+            
+            Button(action: {
+                showAlert = true // 알림 표시
+            }) {
+                Text("Sign Out")
+                    .padding()
+                    .background(Color.red)
+                    .foregroundColor(.white)
+                    .cornerRadius(8)
+            }
+            .padding()
+            .alert(isPresented: $showAlert) {
+                Alert(
+                    title: Text("로그아웃 확인"),
+                    message: Text("정말로 로그아웃 하시겠습니까?"),
+                    primaryButton: .destructive(Text("로그아웃")) {
+                        signOut()
+                    },
+                    secondaryButton: .cancel()
+                )
+            }
             Spacer()
         }
     }
@@ -197,6 +224,40 @@ struct MainContentView: View {
                 .font(.system(size: 14, weight: .medium))
                 .fixedSize(horizontal: true, vertical: false)
             // 그래프 추가 예정
+        }
+    }
+    
+    private func signOut() {
+        do {
+            try Auth.auth().signOut()
+
+            // Clear UserDefaults
+            UserDefaultsManager.shared.clearAll()
+
+            // Navigate ContentView
+            if let window = UIApplication.shared.windows.first {
+                window.rootViewController = UIHostingController(rootView: ContentView())
+                window.makeKeyAndVisible()
+            }
+
+            printUserDefaultsValues()
+        } catch {
+            print("로그아웃 실패: \(error.localizedDescription)")
+        }
+    }
+    
+    private func printUserDefaultsValues() {
+        print("signOut - isSignedIn: \(UserDefaultsManager.shared.isSignedIn)")
+        print("signOut - isGitHubLoggedIn: \(UserDefaultsManager.shared.isGitHubLoggedIn)")
+        if let value = KeychainManager.shared.load(key: "appleUserId") {
+            print("signOut - appleUserId: \(value)")
+        } else {
+            print("signOut - appleUserId == nil")
+        }
+        if let value = KeychainManager.shared.load(key: "githubAccessToken") {
+            print("signOut - githubAccessToken: \(value)")
+        } else {
+            print("signOut - githubAccessToken == nil")
         }
     }
 }
