@@ -7,6 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0B22679E2C62166900150F31 /* CommitModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B22679D2C62166900150F31 /* CommitModel.swift */; };
+		0B2267A02C62291A00150F31 /* WeeklyGraphView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B22679F2C62291A00150F31 /* WeeklyGraphView.swift */; };
+		0B2267A22C62293000150F31 /* YearGraphView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B2267A12C62293000150F31 /* YearGraphView.swift */; };
+		0B2267A42C62294200150F31 /* MonthGraphView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B2267A32C62294200150F31 /* MonthGraphView.swift */; };
+		0B2267A72C622E4800150F31 /* MainContentViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B2267A62C622E4800150F31 /* MainContentViewModel.swift */; };
 		0B3534F82C5394AA00F4B57C /* LoginKey.plist in Resources */ = {isa = PBXBuildFile; fileRef = 0B3534F72C5394AA00F4B57C /* LoginKey.plist */; };
 		0B3534FB2C53A41700F4B57C /* UserDefaultsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B3534FA2C53A41700F4B57C /* UserDefaultsManager.swift */; };
 		0B3FEC182C54CFE400C555CB /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = 0B3FEC172C54CFE400C555CB /* GoogleSignIn */; };
@@ -31,6 +36,11 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0B22679D2C62166900150F31 /* CommitModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommitModel.swift; sourceTree = "<group>"; };
+		0B22679F2C62291A00150F31 /* WeeklyGraphView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeeklyGraphView.swift; sourceTree = "<group>"; };
+		0B2267A12C62293000150F31 /* YearGraphView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YearGraphView.swift; sourceTree = "<group>"; };
+		0B2267A32C62294200150F31 /* MonthGraphView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonthGraphView.swift; sourceTree = "<group>"; };
+		0B2267A62C622E4800150F31 /* MainContentViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainContentViewModel.swift; sourceTree = "<group>"; };
 		0B3534F72C5394AA00F4B57C /* LoginKey.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = LoginKey.plist; sourceTree = "<group>"; };
 		0B3534FA2C53A41700F4B57C /* UserDefaultsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaultsManager.swift; sourceTree = "<group>"; };
 		0B5570B02C54F3A100454FAF /* GITHERB.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = GITHERB.entitlements; sourceTree = "<group>"; };
@@ -68,6 +78,25 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0B22679C2C62165A00150F31 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				0B22679D2C62166900150F31 /* CommitModel.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		0B2267A52C62295000150F31 /* Main */ = {
+			isa = PBXGroup;
+			children = (
+				0BD423F32C4E257A005E4D63 /* MainContentView.swift */,
+				0B22679F2C62291A00150F31 /* WeeklyGraphView.swift */,
+				0B2267A32C62294200150F31 /* MonthGraphView.swift */,
+				0B2267A12C62293000150F31 /* YearGraphView.swift */,
+			);
+			path = Main;
+			sourceTree = "<group>";
+		};
 		0B3534F92C53A40300F4B57C /* Manager */ = {
 			isa = PBXGroup;
 			children = (
@@ -108,6 +137,7 @@
 			children = (
 				0B5570B02C54F3A100454FAF /* GITHERB.entitlements */,
 				0B3534F92C53A40300F4B57C /* Manager */,
+				0B22679C2C62165A00150F31 /* Model */,
 				0BD423F02C4E24FD005E4D63 /* View */,
 				0BD423F12C4E2505005E4D63 /* ViewModel */,
 				0BC977C42C4E1DF600BE0EC1 /* GITHERBApp.swift */,
@@ -140,7 +170,7 @@
 			isa = PBXGroup;
 			children = (
 				0B8BB2AC2C5D1861009003B5 /* Auth */,
-				0BD423F32C4E257A005E4D63 /* MainContentView.swift */,
+				0B2267A52C62295000150F31 /* Main */,
 				0BD423F72C4E25CB005E4D63 /* CalendarContentView.swift */,
 				0BD423F52C4E258D005E4D63 /* TodoContentView.swift */,
 				0BD423F92C4E25D7005E4D63 /* ProfileContentView.swift */,
@@ -153,6 +183,7 @@
 			children = (
 				0B8BB2B12C5D2C02009003B5 /* AppleSignInViewModel.swift */,
 				0B8BB2B32C5D2C0D009003B5 /* GitHubSignInViewModel.swift */,
+				0B2267A62C622E4800150F31 /* MainContentViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -242,14 +273,19 @@
 			buildActionMask = 2147483647;
 			files = (
 				0BD423FA2C4E25D7005E4D63 /* ProfileContentView.swift in Sources */,
+				0B2267A72C622E4800150F31 /* MainContentViewModel.swift in Sources */,
 				0BA7CD4C2C5E2B240061CB59 /* GithubLinkView.swift in Sources */,
+				0B22679E2C62166900150F31 /* CommitModel.swift in Sources */,
 				0BD423F62C4E258D005E4D63 /* TodoContentView.swift in Sources */,
 				0B8BB2A32C5CC0D5009003B5 /* AppleSignInView.swift in Sources */,
 				0B3534FB2C53A41700F4B57C /* UserDefaultsManager.swift in Sources */,
+				0B2267A02C62291A00150F31 /* WeeklyGraphView.swift in Sources */,
 				0B8BB2B42C5D2C0D009003B5 /* GitHubSignInViewModel.swift in Sources */,
 				0B8BB2A52C5CC104009003B5 /* GitHubSignInView.swift in Sources */,
 				0BC977C52C4E1DF600BE0EC1 /* GITHERBApp.swift in Sources */,
+				0B2267A42C62294200150F31 /* MonthGraphView.swift in Sources */,
 				0BD423F82C4E25CB005E4D63 /* CalendarContentView.swift in Sources */,
+				0B2267A22C62293000150F31 /* YearGraphView.swift in Sources */,
 				0BD423F42C4E257A005E4D63 /* MainContentView.swift in Sources */,
 				0B8BB2B22C5D2C02009003B5 /* AppleSignInViewModel.swift in Sources */,
 			);

@@ -45,7 +45,7 @@ struct ContentView: View {
                 } else {
                     Group {
                         if UserDefaultsManager.shared.isSignedIn && UserDefaultsManager.shared.isGitHubLoggedIn {
-                            MainContentView()
+                            MainContentView(data: exampleYearData)
                         } else {
                             VStack(spacing: 114) {
                                 Spacer()
